@@ -1,0 +1,8 @@
+test:
+  merchant_id: '123456789'
+  pathfile: '/pathfile'
+  bin_path: <%= '/tmp/test' %>
+  http_host: <%= 'http://example.com' %>
+  http_port: <%= '80' %>
+  request_uri: <%= '/request' %>
+  autoresponse_uri: <%= '/autoresponse' %>

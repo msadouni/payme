@@ -1,4 +1,7 @@
 # encoding: UTF-8
+require 'net/http'
+require 'uri'
+require 'erb'
 
 require 'payme/config'
 require 'payme/errors'

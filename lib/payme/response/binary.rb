@@ -10,10 +10,18 @@ module Payme
         # And returns the form
         #
         def launch
-          result = exec.split('!')
+          if options[:http_host]
+            result = call
+            raise Payme::Errors::HttpError if result.code != '200'
+            response = result.body.split('!')
+            raise Payme::Errors::InvalidHttpParameters if response.empty?
+            parse_result response
+          else
+            result = exec.split('!')
           
-          raise Payme::Errors::MissingPath if result.empty? or (result[1].empty? && result[2].empty?)
-          parse_result result
+            raise Payme::Errors::MissingPath if result.empty? or (result[1].empty? && result[2].empty?)
+            parse_result result
+          end
         end
         
         private
@@ -25,6 +33,10 @@ module Payme
           `#{path} pathfile=#{options[:pathfile]} message=#{message}`
         end
         
+        def call
+Net::HTTP.post_form(URI.parse("#{options[:http_host]}:#{options[:http_port] ||= 80}#{options[:autoresponse_uri]}"), :pathfile => options[:pathfile], :message => message)
+        end
+
         def parse_result(result)
           parsed = Hash.new
           result.each_index do |i|

@@ -14,6 +14,12 @@ module Payme
             a.join('=')
           end.join(' ') + " amount=#{amount}"
         end
+
+        def parse_http_params
+          options.reject do |k,v|
+            !valid_params.include?(k.to_s)
+          end.merge(:amount => amount)
+        end
       end
       
       

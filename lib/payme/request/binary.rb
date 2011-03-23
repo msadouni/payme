@@ -10,10 +10,16 @@ module Payme
         # And returns the form
         #
         def launch
-          result = exec.split('!')
-          
-          raise Payme::Errors::MissingPath if result.empty? or (result[1].empty? && result[2].empty?)
-          result
+          if options[:http_host]
+            result = call
+            raise Payme::Errors::HttpError if result.code != '200'
+            raise Payme::Errors::InvalidHttpParameters unless result.body =~ /<form\s/i
+            result.body
+          else
+            result = exec.split('!')
+            raise Payme::Errors::MissingPath if result.empty? or (result[1].empty? && result[2].empty?)
+            result
+          end
         end
         
         private
@@ -23,6 +29,10 @@ module Payme
         def exec
           path = File.join(options[:bin_path], 'request')
           `#{path} #{parse_params}` || ''
+        end
+
+        def call
+Net::HTTP.post_form(URI.parse("#{options[:http_host]}:#{options[:http_port] ||= 80}#{options[:request_uri]}"), parse_http_params)
         end
       end
     end
