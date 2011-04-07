@@ -14,7 +14,7 @@ module Payme
             result = call
             raise Payme::Errors::HttpError if result.code != '200'
             raise Payme::Errors::InvalidHttpParameters unless result.body =~ /<form\s/i
-            result.body
+            ['', '0', '', result.body]
           else
             result = exec.split('!')
             raise Payme::Errors::MissingPath if result.empty? or (result[1].empty? && result[2].empty?)

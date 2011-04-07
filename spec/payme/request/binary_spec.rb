@@ -48,8 +48,9 @@ describe Payme::RequestBinary do
     it 'should return the form after a successful http call' do
       Payme::Config.set_config('spec/fixtures/http_config.yml', 'test')
       request = Payme::Request.new(300)
-      expected_result = YAML::load(File.open('spec/fixtures/form_data.yml'))['form_data']
-      stub_request(:post, request.options[:http_host] + request.options[:request_uri]).to_return(:status => 200, :body => expected_result)
+      form = YAML::load(File.open('spec/fixtures/form_data.yml'))['form_data']
+      expected_result = ['', '0', '', form]
+      stub_request(:post, request.options[:http_host] + request.options[:request_uri]).to_return(:status => 200, :body => form)
       request.launch.should eql(expected_result)
     end
   end
